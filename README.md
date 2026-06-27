@@ -1,6 +1,6 @@
 <!-- Cover Image -->
 <p align="center">
-  <img src="ai102-cover-image.png" alt="AI-102: Designing and Implementing a Microsoft Azure AI Solution" width="400"/>
+  <img src="ai103-cover-image.png" alt="AI-103: Developing AI Apps and Agents on Azure" width="400"/>
 </p>
 
 <p align="center">
@@ -14,13 +14,13 @@
   <a href="https://github.com/timothywarner-org/ai102-1/security/dependabot"><img src="https://img.shields.io/badge/Dependabot-enabled-brightgreen?logo=dependabot" alt="Dependabot Status"></a>
 </p>
 
-# AI-102: Designing and Implementing a Microsoft Azure AI Solution
+# AI-103: Developing AI Apps and Agents on Azure
 
 [![Security: Educational Use Only](https://img.shields.io/badge/security-educational--use--only-red)](./SECURITY.md)
 
 > **Warning:** This repository contains intentionally vulnerable code for training and demonstration purposes. See [SECURITY.md](./SECURITY.md) for details.
 
-Welcome! This is the official learning hub for my Microsoft Press video course, **Exam AI-102: Designing and Implementing a Microsoft Azure AI Solution**.
+Welcome! This is the official learning hub for my Microsoft Press video course, **Exam AI-103: Developing AI Apps and Agents on Azure**.
 
 > **Delight is the name of the game.**  
 > Friendly, human, and neurodivergent-friendly—just like Tim Warner's teaching style.  
@@ -52,7 +52,7 @@ This course covers **20 lessons**—each with hands-on code, demos, and real-wor
 17. **Optimize Generative AI Models**
 18. **Implement Responsible AI Practices**
 19. **Monitor and Optimize Azure AI Solutions**
-20. **Prepare for the AI-102 Exam**
+20. **Prepare for the AI-103 Exam**
 
 > See [`/lessons`](./lessons) for code samples and lesson-aligned demos.
 
@@ -92,7 +92,7 @@ MIT License. See [`LICENSE`](./LICENSE) for details.
 
 ## About This Repository
 
-This repo is for hands-on labs, demos, and exercises for the AI-102 course. **It contains intentionally insecure code for educational use only.**
+This repo is for hands-on labs, demos, and exercises for the AI-103 course. **It contains intentionally insecure code for educational use only.**
 
 See [SECURITY.md](./SECURITY.md) for security policy and responsible use guidelines.
 

@@ -1,6 +1,6 @@
 # Fixes Yet To Make
 
-This file documents all outstanding improvements, fixes, and enhancements for the AI-102 repo. It includes both incoming suggestions and action items discussed in this project.
+This file documents all outstanding improvements, fixes, and enhancements for the AI-103 repo. It includes both incoming suggestions and action items discussed in this project.
 
 ---
 
