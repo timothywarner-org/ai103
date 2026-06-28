@@ -97,7 +97,7 @@ python model_bakeoff.py --prompt "Summarize the CAP theorem in one sentence."
 LO1  model       : gpt-5.1  (capable LLM for agent reasoning)
 LO2  service     : Microsoft Foundry Agents (Agent Framework), keyless auth
 LO3  retrieval   : file-search grounding over a managed vector store
-LO4  integration : thread (memory) + custom tool + knowledge source + approval gate
+LO4  integration : session (memory) + custom tool + knowledge source + approval gate
 ========================================================================
 User: I'm Dana Lee, a Premium customer. I bought 22 days ago for $80 ...
 Agent: You're within the 30-day Premium window, so you qualify for a full refund.
