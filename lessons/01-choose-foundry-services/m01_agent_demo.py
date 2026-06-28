@@ -18,12 +18,12 @@ Each decision is one ingredient, and they map straight onto the lesson's own sli
                                    the work needs tools and state, not stateless chat.
   LO3  choose RETRIEVAL .......... ground the agent on a knowledge file with the
                                    file-search tool (a managed vector store).
-  LO4  MEMORY + TOOLS + KNOWLEDGE  a conversation session (memory), a custom @tool
+  LO4  MEMORY + TOOLS + KNOWLEDGE  a conversation thread (memory), a custom @tool
                                    (tool), the file-search knowledge source, and an
                                    approval gate on the tool (the guardrail).
 
-Setup:  pip install -r requirements.txt  ;  az login  ;  copy .env.example to .env
-Run:    python m01_agent_demo.py
+Setup:  uv sync  ;  az login  ;  copy .env.example to .env
+Run:    uv run python m01_agent_demo.py
 
 Author: Tim Warner (TechTrainerTim.com) | Microsoft Press AI-103 video course
 """
@@ -106,26 +106,23 @@ async def main() -> None:
         ),
         tools=[file_search, open_refund_ticket],
     )
-    # Memory: the session carries conversation state across turns. The Agent Framework
-    # GA release renamed the old AgentThread / get_new_thread() API to AgentSession /
-    # create_session(); we use the current name. We do NOT swallow errors here, because a
-    # session that fails to build would silently break the memory turn below, which is the
-    # whole point of LO4.
-    session = agent.create_session()
-    print("LO4  integration : session (memory) + custom tool + knowledge source + approval gate")
+    thread = None
+    with contextlib.suppress(Exception):
+        thread = agent.get_new_thread()  # memory: the thread carries conversation state
+    print("LO4  integration : thread (memory) + custom tool + knowledge source + approval gate")
     print("=" * 72)
 
     # Turn 1 forces RETRIEVAL (read the policy) and the TOOL (open the ticket).
     q1 = ("I'm Dana Lee, a Premium customer. I bought 22 days ago for $80 and want a "
           "refund. Do I qualify, and if so please process it.")
     print(f"\nUser: {q1}")
-    print(f"Agent: {await agent.run(q1, session=session)}")
+    print(f"Agent: {await agent.run(q1, thread=thread)}")
 
     # Turn 2 forces MEMORY: the name and amount are not repeated, so the agent must
-    # recall them from the session.
+    # recall them from the thread.
     q2 = "Remind me which plan I'm on and what refund you just queued for me."
     print(f"\nUser: {q2}")
-    print(f"Agent: {await agent.run(q2, session=session)}")
+    print(f"Agent: {await agent.run(q2, thread=thread)}")
 
     print("\n" + "=" * 72)
     print("One agent, four decisions: model (LO1), Agents service (LO2), grounded")

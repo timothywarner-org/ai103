@@ -20,11 +20,11 @@ Lesson-1 decision shows up as one ingredient, exactly like the slide that says
 | **LO1 -- choose a model** | the agent reasons with your `FOUNDRY_MODEL` (a capable LLM) | `FOUNDRY_MODEL` |
 | **LO2 -- choose a service** | the **Agents service** via `FoundryChatClient`, not stateless chat | `FoundryChatClient(...)` |
 | **LO3 -- choose retrieval** | grounds answers on a knowledge file (managed vector store) | `get_file_search_tool(...)` |
-| **LO4 -- memory + tools + knowledge** | a **session** (memory), a custom **@tool**, the knowledge source, and an **approval gate** (guardrail) | `create_session()`, `@tool`, `tools=[...]` |
+| **LO4 -- memory + tools + knowledge** | a **thread** (memory), a custom **@tool**, the knowledge source, and an **approval gate** (guardrail) | `get_new_thread()`, `@tool`, `tools=[...]` |
 
 It runs a two-turn conversation: turn 1 forces the agent to **read the policy
 (retrieval)** and **open a refund ticket (tool)**; turn 2 omits the customer's name
-so the agent must **remember it from the session (memory)**.
+so the agent must **remember it from the thread (memory)**.
 
 ## Bonus: `model_bakeoff.py` -- an LO1 spotlight
 
@@ -38,57 +38,41 @@ name" lesson, proven with a stopwatch.
 - A **Microsoft Foundry** project with a **deployed chat model** (e.g. `gpt-5.1`).
 - A **basic agent setup** in that project (managed storage + vector store for file search).
 - The **Azure CLI**, signed in with `az login` (auth is keyless -- no API keys).
-- **Python 3.10 - 3.13** (the Agent Framework GA wheels do not yet publish for 3.14).
+- **uv** ([install guide](https://docs.astral.sh/uv/getting-started/installation/)). You do **not** need to install Python yourself.
 
-## Environment variables
+## Setup
 
-Both demos read their config from the environment (never hardcoded). Copy
-`.env.example` to `.env`, then fill in your values. Each variable is documented in
-`.env.example` with a one-line note on where to get it.
+This project uses **uv**. Why uv here: the **Microsoft Agent Framework** GA wheels publish for **Python 3.10 - 3.13 only**, and `uv` reads the pinned **`.python-version` (3.13)** to build the virtual environment on the right interpreter automatically, so the wheels install even when your system default is Python 3.14.
+
+PowerShell 7:
+
+```powershell
+cd lessons/01-choose-foundry-services
+uv sync                      # creates the .venv with Python 3.13 and installs deps
+az login                     # keyless auth
+Copy-Item .env.example .env  # then fill in your Foundry values
+```
+
+bash:
+
+```bash
+cd lessons/01-choose-foundry-services
+uv sync                  # creates the .venv with Python 3.13 and installs deps
+az login                 # keyless auth
+cp .env.example .env     # then fill in your Foundry values
+```
 
 | Variable | Used by | What it is |
 |---|---|---|
 | `FOUNDRY_PROJECT_ENDPOINT` | both | Foundry portal -> project -> Overview -> Endpoint |
 | `FOUNDRY_MODEL` | agent demo | deployment **name** of your chat model (e.g. `gpt-5.1`) |
-| `FLAGSHIP_DEPLOYMENT` | bake-off | deployment **name** of your flagship LLM (e.g. `gpt-5.1`) |
-| `SLM_DEPLOYMENT` | bake-off | deployment **name** of your small model (e.g. `phi-4`) |
+| `FLAGSHIP_DEPLOYMENT` / `SLM_DEPLOYMENT` | bake-off | the two deployment names to compare |
 
 ## Run it
 
-Run both demos straight from this folder. Pick the block for your shell. The sequence
-is the same: create and activate a **virtual environment**, install dependencies, sign
-in **keyless** with `az login`, create your `.env`, then run the two scripts.
-
-**Windows (PowerShell 7):**
-
-```powershell
-cd lessons/01-plan-azure-ai
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-az login
-Copy-Item .env.example .env   # then edit .env with your Foundry values
-python m01_agent_demo.py      # the main demo -- all four LOs
-python model_bakeoff.py       # the LO1 spotlight
-```
-
-**macOS / Linux (bash):**
-
 ```bash
-cd lessons/01-plan-azure-ai
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-az login
-cp .env.example .env          # then edit .env with your Foundry values
-python m01_agent_demo.py      # the main demo -- all four LOs
-python model_bakeoff.py       # the LO1 spotlight
-```
-
-The bake-off also takes a custom prompt:
-
-```bash
-python model_bakeoff.py --prompt "Summarize the CAP theorem in one sentence."
+uv run python m01_agent_demo.py     # the main demo -- all four LOs
+uv run python model_bakeoff.py      # the LO1 spotlight
 ```
 
 ## What you will see (agent demo, illustrative)
@@ -97,7 +81,7 @@ python model_bakeoff.py --prompt "Summarize the CAP theorem in one sentence."
 LO1  model       : gpt-5.1  (capable LLM for agent reasoning)
 LO2  service     : Microsoft Foundry Agents (Agent Framework), keyless auth
 LO3  retrieval   : file-search grounding over a managed vector store
-LO4  integration : session (memory) + custom tool + knowledge source + approval gate
+LO4  integration : thread (memory) + custom tool + knowledge source + approval gate
 ========================================================================
 User: I'm Dana Lee, a Premium customer. I bought 22 days ago for $80 ...
 Agent: You're within the 30-day Premium window, so you qualify for a full refund.

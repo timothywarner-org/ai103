@@ -1,0 +1,21 @@
+[project]
+name = "ai103-m01-demos"
+version = "1.0.0"
+description = "AI-103 Module 1 demos: choose Foundry services, models, and integration approach (grounded agent + model bake-off)."
+readme = "README.md"
+# Microsoft Agent Framework GA wheels publish for Python 3.10 - 3.13 only.
+# Capping below 3.14 is the line that prevents 'pip/uv could not find a wheel' on a 3.14 box.
+requires-python = ">=3.10,<3.14"
+
+dependencies = [
+    # Core Microsoft Foundry SDK + keyless auth (both demos)
+    "azure-ai-projects>=2.0.0",
+    "azure-identity>=1.19.0",
+    "openai>=1.75.0",
+    "python-dotenv>=1.0.0",
+
+    # m01_agent_demo.py -- Microsoft Agent Framework on Foundry (the all-four-LOs demo)
+    "agent-framework-foundry>=1.0.0",
+    "aiohttp>=3.10.0",
+    "pydantic>=2.0.0",
+]

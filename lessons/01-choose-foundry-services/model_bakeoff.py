@@ -18,11 +18,11 @@ Auth is KEYLESS (Microsoft Entra ID via DefaultAzureCredential), which is the
 AI-103 security posture -- no API keys live in this file. Run `az login` first.
 
 Setup (see README.md and .env.example):
-  pip install -r requirements.txt
+  uv sync
   az login
 Run:
-  python model_bakeoff.py
-  python model_bakeoff.py --prompt "Summarize the CAP theorem in one sentence."
+  uv run python model_bakeoff.py
+  uv run python model_bakeoff.py --prompt "Summarize the CAP theorem in one sentence."
 
 Author: Tim Warner (TechTrainerTim.com) | Microsoft Press AI-103 video course
 """
@@ -33,7 +33,7 @@ import sys
 import time
 
 # Microsoft Foundry SDK: keyless auth plus a ready-made OpenAI client.
-# Install with: pip install -r requirements.txt
+# Install with: uv sync
 from azure.ai.projects import AIProjectClient
 from azure.identity import DefaultAzureCredential
 
