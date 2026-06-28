@@ -18,17 +18,37 @@ This file documents all outstanding improvements, fixes, and enhancements for th
 - [ ] Add `.env.sample` files to lesson folders that require them
 - [ ] Ensure all setup instructions referencing `.env.sample` are accurate
 
-## 🧩 Demo Apps & Lesson Coverage
+## 🧩 Demo Coverage (18-module AI-103 domain)
 
-- [ ] Create or port demo apps for lessons currently missing them:
-  - [ ] Lesson 1: Plan Azure AI Solutions
-  - [ ] Lesson 2: Design AI Architectures
-  - [ ] Lesson 7: Create Custom Computer Vision Models
-  - [ ] Lesson 10: Build Conversational AI with Bots
-  - [ ] Lesson 13: Translate and Localize Content
-  - [ ] Lesson 17: Optimize Generative AI Models
-- [ ] Expand lesson subfolder READMEs with detailed instructions and sample code
-- [ ] Map each imported resource/demo to its corresponding lesson in the scaffold
+The repo is now aligned to the **frozen 18-module objective domain**. Demo status per module:
+
+- **Real, working demo** (1 module):
+  - [x] **01 - Choose the appropriate Foundry services for generative AI and agents**: `m01_agent_demo.py` (all-four-LO grounded agent) + `model_bakeoff.py` (LO1 model bake-off). This is the template all other modules should follow.
+
+- **Node skeleton only** (carried over, needs a real demo) (5 modules):
+  - [ ] **07 - Optimize and operationalize generative AI systems**: `node-demo/generate.js` (Azure OpenAI call). Scaffold -> build LO1 prompt/parameter tuning demo.
+  - [ ] **10 - Build agents by using Foundry**: `node-demo/index.js` (Bot Framework echo bot). Scaffold -> rebuild as a Foundry agent demo.
+  - [ ] **13 - Design and implement multimodal understanding workflows**: `node-demo/app.js` (Custom Vision classify). Scaffold -> LO8 object/region identification.
+  - [ ] **15 - Apply language model text analysis**: `node-demo/translate.js` (Azure Translator). Scaffold -> maps to LO3 (text translation).
+  - [ ] **16 - Implement speech solutions**: `speech-to-text-demo.js` (Speech SDK). Scaffold -> maps to LO1 (speech to text).
+
+- **No demo yet** (README scaffold only) (12 modules):
+  - [ ] **02 - Set up AI solutions in Foundry**
+  - [ ] **03 - Manage, monitor, and secure AI systems** (manage/monitor emphasis)
+  - [ ] **04 - Manage, monitor, and secure AI systems** (secure emphasis)
+  - [ ] **05 - Implement responsible AI across generative AI and agentic systems**
+  - [ ] **06 - Build generative applications by using Foundry**
+  - [ ] **08 - Build generative applications by using Foundry**
+  - [ ] **09 - Build generative applications by using Foundry**
+  - [ ] **11 - Build agents by using Foundry**
+  - [ ] **12 - Design and implement image- and video-generation solutions**
+  - [ ] **14 - Implement responsible AI for multimodal content**
+  - [ ] **17 - Build retrieval and grounding pipelines**
+  - [ ] **18 - Extract content from documents**
+
+- [ ] Promote each Node skeleton into a real, runnable demo (or replace with a Python demo matching the Module 01 pattern: keyless Foundry SDK, `.env.example`, runnable from the module folder).
+- [ ] Expand module READMEs with detailed run steps and sample code as demos land.
+- [ ] Map each imported resource/demo to its corresponding module in the scaffold.
 
 ## 🔄 Code Quality & Security
 
