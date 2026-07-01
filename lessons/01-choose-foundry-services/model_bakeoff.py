@@ -14,8 +14,11 @@ What you should see:
 The "right" model is the one whose strengths match the workload in front of you,
 not the biggest name on the leaderboard.
 
-Auth is KEYLESS (Microsoft Entra ID via DefaultAzureCredential), which is the
+Auth is KEYLESS (Microsoft Entra ID via the Azure CLI sign-in), which is the
 AI-103 security posture -- no API keys live in this file. Run `az login` first.
+We use AzureCliCredential (not DefaultAzureCredential) on purpose: it binds to
+your `az login` identity directly, so a stray environment or managed-identity
+credential on the box cannot silently shadow you and 401 the request.
 
 Setup (see README.md and .env.example):
   uv sync
@@ -35,7 +38,7 @@ import time
 # Microsoft Foundry SDK: keyless auth plus a ready-made OpenAI client.
 # Install with: uv sync
 from azure.ai.projects import AIProjectClient
-from azure.identity import DefaultAzureCredential
+from azure.identity import AzureCliCredential
 
 # Optional convenience: load a local .env file so the script "just works" after you
 # copy .env.example to .env. Falls back silently if python-dotenv is not installed.
@@ -73,7 +76,10 @@ def run_once(openai_client, deployment: str, prompt: str):
     response = openai_client.chat.completions.create(
         model=deployment,
         messages=[{"role": "user", "content": prompt}],
-        max_completion_tokens=300,  # current parameter name for GPT-5.x / reasoning models
+        # GPT-5.x are reasoning models: they spend completion tokens on hidden
+        # reasoning BEFORE the visible answer. Too small a budget (e.g. 300) can be
+        # fully consumed by reasoning, returning an empty answer. 1500 leaves room.
+        max_completion_tokens=1500,
     )
     elapsed = time.perf_counter() - started
     answer = response.choices[0].message.content.strip()
@@ -91,7 +97,7 @@ def main() -> None:
         "Foundry portal -> your project -> Overview -> Endpoint (https://<resource>.services.ai.azure.com/api/projects/<project>)",
     )
     flagship = required_env("FLAGSHIP_DEPLOYMENT", "deployment name of your flagship LLM, e.g. gpt-5.1")
-    slm = required_env("SLM_DEPLOYMENT", "deployment name of your small model, e.g. phi-4")
+    slm = required_env("SLM_DEPLOYMENT", "deployment name of your small model, e.g. gpt-5-nano")
 
     print(f"\nPrompt: {args.prompt}")
     print("=" * 72)
@@ -99,7 +105,7 @@ def main() -> None:
     results = []
     # One authenticated, reusable client for the whole project (keyless, Entra ID).
     with (
-        DefaultAzureCredential() as credential,
+        AzureCliCredential() as credential,
         AIProjectClient(endpoint=endpoint, credential=credential) as project,
         project.get_openai_client() as client,
     ):

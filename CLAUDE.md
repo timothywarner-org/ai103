@@ -30,7 +30,7 @@ You operate across **two folders**, opened together via `C:\Users\timot\Desktop\
 
 ## Repo structure
 
-- `lessons/NN-topic/` -- per-lesson demo code and a learner README. Lesson 01 (`01-plan-azure-ai/`) is the current flagship: `m01_agent_demo.py` (one grounded agent exercising all four LOs via the Microsoft Agent Framework on Foundry) plus `model_bakeoff.py` (the LO1 model-choice spotlight). Most other lesson folders are still scaffolds. `fixes-to-make.md` tracks which lessons still need demos.
+- `lessons/NN-topic/` -- per-lesson demo code and a learner README. Lesson 01 (`01-choose-foundry-services/`) is the current flagship: `m01_agent_demo.py` (one grounded agent exercising all four LOs via the Microsoft Agent Framework on Foundry) plus `model_bakeoff.py` (the LO1 model-choice spotlight). Most other lesson folders are still scaffolds. `fixes-to-make.md` tracks which lessons still need demos.
 - `lesson-demo-apps/` -- larger standalone demo applications, each with its own toolchain and README:
   - `woodgrove-bank/` -- the most complete: Node demos for document intelligence, image analysis, AI Search + Document Intelligence, and a groundedness API.
   - `tim-chat-front-end/` -- full app with `frontend/`, `backend/`, and `infra/` (azd-deployable via `azure.yaml`).
@@ -46,7 +46,7 @@ You operate across **two folders**, opened together via `C:\Users\timot\Desktop\
 
 ## Commands
 
-Python lesson demos (run from the lesson folder, e.g. `lessons/01-plan-azure-ai/`):
+Python lesson demos (run from the lesson folder, e.g. `lessons/01-choose-foundry-services/`):
 
 ```bash
 pip install -r requirements.txt   # per-lesson deps
