@@ -10,8 +10,8 @@
   <a href="https://www.linkedin.com/in/timothywarner"><img src="https://img.shields.io/badge/LinkedIn-timothywarner-0077b5?logo=linkedin&logoColor=white" alt="LinkedIn"></a>
   <a href="https://discord.com/users/timwarner1"><img src="https://img.shields.io/badge/Discord-timwarner1-5865F2?logo=discord&logoColor=white" alt="Discord"></a>
   <a href="https://mvp.microsoft.com/en-US/mvp/profile/e9a13bca-2798-4247-be56-f116f780869d"><img src="https://img.shields.io/badge/Microsoft%20MVP-2024-blueviolet?logo=microsoft&logoColor=white" alt="Microsoft MVP Profile"></a>
-  <a href="https://github.com/timothywarner-org/ai102-1/actions/workflows/codeql-analysis.yml"><img src="https://github.com/timothywarner-org/ai102-1/actions/workflows/codeql-analysis.yml/badge.svg" alt="CodeQL"></a>
-  <a href="https://github.com/timothywarner-org/ai102-1/security/dependabot"><img src="https://img.shields.io/badge/Dependabot-enabled-brightgreen?logo=dependabot" alt="Dependabot Status"></a>
+  <a href="https://github.com/timothywarner-org/ai103/actions/workflows/codeql-analysis.yml"><img src="https://github.com/timothywarner-org/ai103/actions/workflows/codeql-analysis.yml/badge.svg" alt="CodeQL"></a>
+  <a href="https://github.com/timothywarner-org/ai103/security/dependabot"><img src="https://img.shields.io/badge/Dependabot-enabled-brightgreen?logo=dependabot" alt="Dependabot Status"></a>
 </p>
 
 # AI-103: Developing AI Apps and Agents on Azure
@@ -73,7 +73,7 @@ This course covers **18 modules** mapped to the official AI-103 objective domain
 ## 🚀 How to Use This Repo
 
 1. **Clone the repo:**  
-   `git clone https://github.com/timothywarner/ai102.git`
+   `git clone https://github.com/timothywarner-org/ai103.git`
 2. **Review the [Course Outline](#course-structure)** above, then open the per-module READMEs in [`/lessons`](./lessons)
 3. **Set up your environment:**  
    Copy `.env.sample` to `.env` and fill in your Azure keys (never commit secrets!)
