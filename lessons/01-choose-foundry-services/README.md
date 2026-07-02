@@ -9,7 +9,7 @@ makes **all four** concrete in a single small agent -- the way AI-103 actually s
 
 ## The main demo: one grounded agent, all four decisions
 
-`m01_agent_demo.py` builds **one** small Globomantics support agent with the
+`m01_agent_demo.py` builds **one** small Contoso support agent with the
 **Microsoft Agent Framework** on Microsoft Foundry (the current, GA path -- the
 classic `create_agent`/thread/run API is deprecated and retires in 2027). Every
 Lesson-1 decision shows up as one ingredient, exactly like the slide that says

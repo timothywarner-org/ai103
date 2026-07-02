@@ -19,3 +19,22 @@ dependencies = [
     "aiohttp>=3.10.0",
     "pydantic>=2.0.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
+]
+
+# Pylint tuning for this teaching demo. WHY each knob (all no-op at runtime):
+[tool.pylint.typecheck]
+# agent_framework loads its submodules lazily via __getattr__, which pylint's static
+# import engine (astroid) can't follow -- so it false-flags E0401 even though the modules
+# import fine at runtime (Pylance and `python -c` both resolve them). Exempt ONLY these
+# modules; a genuine import typo anywhere else still fails the lint.
+ignored-modules = ["agent_framework", "agent_framework.foundry"]
+
+[tool.pylint.format]
+# This is recited course code: descriptive names plus inline "why" comments push a few
+# lines past pylint's 100-char default. 120 matches the house style without forcing awkward
+# wraps that would hurt on-screen readability.
+max-line-length = 120

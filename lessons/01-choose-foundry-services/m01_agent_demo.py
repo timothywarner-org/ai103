@@ -30,6 +30,7 @@ Author: Tim Warner (TechTrainerTim.com) | Microsoft Press AI-103 video course
 
 import asyncio
 import contextlib
+import logging
 import os
 import sys
 from typing import Annotated
@@ -45,11 +46,21 @@ try:
 except ImportError:
     pass
 
+# The Foundry file-search tool is an Azure SDK object (ProjectsFileSearchTool). The Agent
+# Framework's OpenTelemetry serializer only recognizes FunctionTool / pydantic model /
+# dict, so on every run it logs a benign "Can't parse tool." WARNING while building span
+# attributes. The tool is still sent to the service correctly and grounding works; only
+# the telemetry line is noise. Drop that one message so the demo console stays clean,
+# without muting genuine agent_framework warnings.
+logging.getLogger("agent_framework").addFilter(
+    lambda record: record.getMessage() != "Can't parse tool."
+)
+
 # A tiny knowledge base the agent will ground on. In production this is your real
 # corpus (policies, manuals, tickets); one line keeps the demo self-contained.
-KB_FILENAME = "globomantics_policy.txt"
+KB_FILENAME = "contoso_policy.txt"
 KB_CONTENT = (
-    b"Globomantics support policy: customers on the Premium plan are entitled to a full "
+    b"Contoso support policy: customers on the Premium plan are entitled to a full "
     b"refund within 30 days of purchase. Standard plan refunds are issued as store credit only."
 )
 
@@ -59,15 +70,22 @@ KB_CONTENT = (
 # production so a human approves any sensitive action before it runs.
 @tool(approval_mode="never_require")
 def open_refund_ticket(
-    customer: Annotated[str, Field(description="Customer name.")],
-    amount_usd: Annotated[float, Field(description="Refund amount in US dollars.")],
+    customer: Annotated[str, Field(description="Customer's full name.")],
+    plan: Annotated[str, Field(description="The customer's plan, e.g. 'Premium' or 'Standard'.")],
+    amount_usd: Annotated[float, Field(description="Requested refund amount in US dollars.")],
+    reason: Annotated[str, Field(description="One-line reason the refund qualifies under policy.")],
 ) -> str:
-    """Open a refund ticket for a customer and return the ticket id."""
-    # A real tool would call your ticketing API here.
-    return f"Ticket RF-{abs(hash(customer)) % 10000:04d} opened for {customer}: ${amount_usd:.2f} refund queued."
+    """Open a refund ticket and return its id. Every argument was extracted by the model."""
+    # A real tool would call your ticketing API here. Set a breakpoint on the return below:
+    # customer + amount_usd come from the user's plain-English message, while plan + reason
+    # come from the model grounding on the policy file -- the whole LO3 + LO4 story in one frame.
+    ticket_id = f"RF-{abs(hash(customer)) % 10000:04d}"
+    return (f"Ticket {ticket_id} opened for {customer} ({plan} plan): "
+            f"${amount_usd:.2f} refund queued -- {reason}.")
 
 
 def required_env(name: str, hint: str) -> str:
+    """Return the value of env var ``name``, or exit with a friendly hint if it is unset."""
     value = os.environ.get(name)
     if not value:
         sys.exit(f"ERROR: environment variable {name} is not set.\n  -> {hint}\n  See .env.example.")
@@ -75,6 +93,7 @@ def required_env(name: str, hint: str) -> str:
 
 
 async def main() -> None:
+    """Build the one grounded agent and run the two teaching turns that exercise LO1-LO4."""
     # LO1 -- the MODEL. The agent reasons with the deployment named in FOUNDRY_MODEL.
     model = required_env("FOUNDRY_MODEL", "your chat model deployment name, e.g. gpt-5.1")
     # FoundryChatClient reads FOUNDRY_PROJECT_ENDPOINT from the environment; validate it early.
@@ -101,7 +120,7 @@ async def main() -> None:
     agent = Agent(
         client=client,
         instructions=(
-            "You are Globomantics' support agent. Ground every policy answer in the refund "
+            "You are Contoso's support agent. Ground every policy answer in the refund "
             "policy via file search, and open a refund ticket with your tool when a refund applies."
         ),
         tools=[file_search, open_refund_ticket],
