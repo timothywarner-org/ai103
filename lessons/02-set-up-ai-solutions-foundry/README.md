@@ -44,7 +44,8 @@ the Bicep in [`../../infra/ai103-core.bicep`](../../infra/ai103-core.bicep).
 ## What you will need
 
 - A **Microsoft Foundry** (AI Services) account and a **hub-less Foundry project** in it.
-- A base model available to deploy in your region (e.g. `gpt-4o-mini`).
+- A base model available to deploy in your region (e.g. `gpt-5-nano`; older ids like
+  `gpt-4o-mini` may be blocked for **new** deployments once they enter a deprecating state).
 - Rights to deploy: **Cognitive Services Contributor** on the account (control plane) **and**
   **Foundry User** on the project (data plane).
 - The **Azure CLI**, signed in with `az login` (auth is keyless -- no API keys).
@@ -77,7 +78,7 @@ cp .env.example .env     # then fill in your Foundry + subscription values
 |---|---|---|
 | `FOUNDRY_PROJECT_ENDPOINT` | data | Foundry portal -> project -> Overview -> Endpoint |
 | `AZURE_SUBSCRIPTION_ID` / `AZURE_RESOURCE_GROUP` / `FOUNDRY_ACCOUNT_NAME` | control | identify the Foundry account resource |
-| `DEPLOY_MODEL_NAME` | -- | base model id to deploy (e.g. `gpt-4o-mini`) |
+| `DEPLOY_MODEL_NAME` / `DEPLOY_MODEL_VERSION` | -- | base model id + version (e.g. `gpt-5-nano` / `2025-08-07`). The gpt-5 family **requires** an explicit version |
 | `DEPLOY_SKU` | LO2 | `GlobalStandard`, `ProvisionedManaged`, `GlobalBatch`, ... |
 | `DEPLOY_UPGRADE_OPTION` / `DEPLOY_RAI_POLICY` | LO3 | version pin + content-filter policy |
 
@@ -89,9 +90,16 @@ uv run python m02_setup_demo.py --dry-run  # print the exact spec, call nothing 
 uv run python m02_setup_demo.py --keep      # leave the deployment standing
 ```
 
-The file also carries `# %%` cell markers, so in **VS Code** you can "Run Cell" in the
-Interactive Window and step through it as a notebook -- with or without Jupyter, no separate
-`.ipynb` to keep in sync.
+Prefer a real notebook? `m02_setup_demo.ipynb` is the same demo in Jupyter form -- the learner
+mirror of `m02_setup_demo.py`, one markdown cell per learning objective, runnable top to bottom:
+
+```bash
+uv run --with jupyter jupyter lab m02_setup_demo.ipynb   # or open it in VS Code
+```
+
+The `.py` also carries `# %%` cell markers, so in **VS Code** you can "Run Cell" in the
+Interactive Window and step through the script itself as a notebook. The `.py` and `.ipynb`
+are kept in sync: same spec, same keyless `AzureCliCredential` auth, same idempotent upsert.
 
 ## What you will see (illustrative)
 
@@ -99,7 +107,7 @@ Interactive Window and step through it as a notebook -- with or without Jupyter,
 LO1  Design infrastructure  |  keyless Entra auth, hub-less Foundry project
   Foundry account (control plane) : contoso-foundry  (rg: rg-ai103)
   Foundry project (data plane)    : https://contoso-foundry.services.ai.azure.com/api/projects/dev
-  Auth                            : DefaultAzureCredential -- no API keys
+  Auth                            : AzureCliCredential (az login) -- no API keys
 LO2  Choose a deployment option  +  LO3  Configure it
   LO2 sku.name            : GlobalStandard  (GlobalStandard = pay-per-token shared)
   LO3 versionUpgradeOption: NoAutoUpgrade  (NoAutoUpgrade = pinned)

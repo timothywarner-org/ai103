@@ -5,8 +5,15 @@ M02 demo -- one real Foundry model deployment that makes ALL FOUR Lesson 2 decis
 AI-103 Lesson 2 ("Set up AI solutions in Foundry") is four choices about *setting up*
 infrastructure and deployments. Rather than four disconnected snippets, this builds the
 ONE artifact those choices produce -- a real, running model deployment -- then tears it
-back down. Everything is keyless (Microsoft Entra ID via DefaultAzureCredential): no API
+back down. Everything is keyless (Microsoft Entra ID via AzureCliCredential): no API
 keys anywhere, exactly the way AI-103 wants you deploying in production and in CI/CD.
+
+We authenticate with AzureCliCredential (your `az login` identity) rather than the broader
+DefaultAzureCredential on purpose: DefaultAzureCredential checks EnvironmentCredential FIRST,
+so a stray AZURE_CLIENT_ID/AZURE_CLIENT_SECRET in your shell would silently sign you in as a
+service principal instead of you. Pinning to the CLI identity makes the demo deterministic on
+any machine. In CI/CD you swap this one line for DefaultAzureCredential and let the pipeline's
+federated (OIDC) identity resolve -- still secretless (see LO4).
 
 Each decision maps onto the lesson's own slides (and onto an exam "tell"):
 
@@ -50,7 +57,7 @@ import argparse
 import os
 import sys
 
-from azure.identity import DefaultAzureCredential
+from azure.identity import AzureCliCredential
 from azure.mgmt.cognitiveservices import CognitiveServicesManagementClient  # CONTROL plane
 from azure.ai.projects import AIProjectClient                              # DATA plane
 
@@ -108,9 +115,11 @@ def build_deployment_spec() -> dict:
     write in a Bicep/ARM template one-for-one, which is the LO4 bridge to infrastructure as
     code. Every key below has a direct Bicep equivalent in ../../infra/ai103-core.bicep.
     """
-    model_name = required_env("DEPLOY_MODEL_NAME", "the base model to deploy, e.g. gpt-4o-mini")
+    model_name = required_env("DEPLOY_MODEL_NAME", "the base model to deploy, e.g. gpt-5-nano")
     model_format = os.environ.get("DEPLOY_MODEL_FORMAT", "OpenAI")
-    model_version = os.environ.get("DEPLOY_MODEL_VERSION", "")  # empty -> let the service pick default
+    # Empty lets older models pick their default version, but some families (e.g. gpt-5)
+    # REQUIRE an explicit version -- which is itself the LO3 version-pinning lesson.
+    model_version = os.environ.get("DEPLOY_MODEL_VERSION", "")
 
     model_block = {"format": model_format, "name": model_name}
     if model_version:  # pin an explicit version only if you gave one
@@ -147,14 +156,16 @@ def main() -> None:
     resource_group = required_env("AZURE_RESOURCE_GROUP", "the resource group holding the Foundry account")
     account_name = required_env("FOUNDRY_ACCOUNT_NAME", "the Foundry (Cognitive Services) account name")
 
-    # One credential, two planes. DefaultAzureCredential uses `az login` locally and, in a
-    # GitHub Actions/Azure Pipelines run, a federated (OIDC) identity -- no secrets either way.
-    credential = DefaultAzureCredential()
+    # One credential, two planes. AzureCliCredential binds to your `az login` identity, so the
+    # demo is deterministic even when AZURE_CLIENT_ID/SECRET env vars are set for other tools.
+    # In CI/CD, swap this single line for DefaultAzureCredential() to pick up the pipeline's
+    # federated (OIDC) identity -- still no secrets either way (LO4).
+    credential = AzureCliCredential()
     arm = CognitiveServicesManagementClient(credential, subscription_id)  # CONTROL plane (create/config)
     project = AIProjectClient(endpoint=project_endpoint, credential=credential)  # DATA plane (read/call)
     print(f"  Foundry account (control plane) : {account_name}  (rg: {resource_group})")
     print(f"  Foundry project (data plane)    : {project_endpoint}")
-    print("  Auth                            : DefaultAzureCredential -- no API keys")
+    print("  Auth                            : AzureCliCredential (az login) -- no API keys")
     print("  EXAM TELL: control-plane create needs Cognitive Services Contributor; data-plane")
     print("            read/call needs Foundry User. Owner/Contributor alone grant no data actions.")
 
@@ -196,7 +207,7 @@ def main() -> None:
             print(f"  data-plane sees it      : {seen.name}  model={seen.model_name}  "
                   f"v={seen.model_version}  type={seen.type}")
     except Exception as exc:  # data-plane listing is a nice-to-have, never fatal
-        print(f"  (data-plane list skipped: {exc})")
+        print(f"  (data-plane list skipped: {type(exc).__name__})")
 
     try:
         with project.get_openai_client() as openai_client:
@@ -215,8 +226,8 @@ def main() -> None:
     print("  idempotency is exactly what lets it run in a pipeline. The spec dict maps 1:1 to")
     print("  the Bicep resource in ../../infra/ai103-core.bicep (sku.name, model, versionUpgradeOption,")
     print("  raiPolicyName), so 'treat AI infra as code' is literal here.")
-    print("  In GitHub Actions, DefaultAzureCredential picks up a federated (OIDC) identity via")
-    print("  azure/login with permissions: id-token: write -- so there is NO stored secret to leak.")
+    print("  In GitHub Actions, swap AzureCliCredential for DefaultAzureCredential: it picks up a")
+    print("  federated (OIDC) identity via azure/login with id-token: write -- NO stored secret to leak.")
 
     # ---- teardown (default) so the demo costs nothing to leave behind ----
     if args.keep:
